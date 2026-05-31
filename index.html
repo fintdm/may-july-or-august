@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Massage</title>
+<style>
+    
+/* Начинается ебанный CSS */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    background:linear-gradient(135deg,#ffffff,#000000);
+}
+
+
+.in-yan{
+    position:fixed;
+    top:-30px;
+    font-size:20px;
+    animation:fall linear forwards;
+    pointer-events:none;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh);
+        opacity:0;
+    }
+}
+
+
+.card{
+    background:rgb(177, 177, 177);
+    padding:35px;
+    border-radius:35px;
+    text-align:center;
+    width:420px;
+    box-shadow:0 15px 45px rgb(0, 0, 0);
+    position:relative;
+    z-index:2;
+    animation:show .6s ease;
+}
+
+@keyframes show{
+    from{
+        opacity:0;
+        transform:scale(.8);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+img{
+    width:250px;
+    height:250px;
+    object-fit:cover;
+    border-radius:25px;
+    margin-bottom:15px;
+}
+
+h1{
+    color:#0c0c0c;
+    margin-bottom:25px;
+    font-size:30px;
+}
+
+.buttons{
+    position:relative;
+    height:90px;
+    width:300px;
+    margin:0 auto;
+}
+
+button{
+    border:none;
+    border-radius:30px;
+    padding:14px 30px;
+    font-size:18px;
+    cursor:pointer;
+    transition:.25s;
+    font-weight:bold;
+}
+#yes,
+#no{
+    position:absolute;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    border:none;
+    border-radius:30px;
+    padding:14px 32px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+#yes{
+    background:#000000;
+    color:rgb(255, 255, 255);
+    box-shadow:0 6px 18px rgb(0, 0, 0);
+    z-index:1;
+}
+
+#no{
+    background:#ffffff;
+    color:#141316;
+    box-shadow:0 6px 18px rgb(0, 0, 0);
+    z-index:2;
+}
+
+.fall-away{
+    animation: fall 0.7s ease forwards;
+}
+
+@keyframes fall{
+    0%{
+        transform: translateX(-50%) translateY(0) rotate(0deg);
+        opacity:1;
+    }
+    100%{
+        transform: translateX(-50%) translateY(200px) rotate(20deg);
+        opacity:0;
+    }
+}
+
+.loader-wrap{
+    position:fixed;
+    inset:0;
+    display:none;
+    background:#000;
+    z-index:9999;
+    padding:20px;
+    font-family:monospace;
+    color:#fff;
+}
+
+.terminal{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-size:14px;
+    line-height:1.6;
+    white-space:pre-wrap;
+}
+
+.fade-overlay{
+    position:fixed;
+    inset:0;
+    background:#000;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.8s ease;
+    z-index:9998;
+}
+
+.white-scene{
+    position:fixed;
+    inset:0;
+    background:src("https://images.unsplash.com/photo-1520975958225-1c6f0d1f0dbe") center/cover no-repeat;
+    color:#fff;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:10000;
+    opacity:0;
+    transition:opacity 0.8s ease;
+    font-family:monospace;
+    padding:40px;
+    text-align:center;
+}
+
+.white-scene.show{
+    opacity:1;
+}
+
+.typing{
+    font-size:28px;
+    max-width:800px;
+    line-height:1.5;
+}
+
+.essay-scene{
+    position:fixed;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    display:none;
+    justify-content:center;
+    align-items:flex-start;
+    padding:80px 20px;
+    z-index:10001;
+    opacity:0;
+    transition:opacity 0.8s ease;
+}
+
+.essay-text::after{
+    content:"▍";
+    display:inline-block;
+    margin-left:4px;
+    animation:blink 0.8s infinite;
+}
+
+@keyframes blink{
+    0%,50%{opacity:1;}
+    51%,100%{opacity:0;}
+}
+
+</style>
+</head>
+<body>
+
+    
+<div class="card">
+    <img src="https://i.pinimg.com/736x/08/dc/7e/08dc7e4d953cb450b57e4000264890d3.jpg" alt="">
+    <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+    <h1 id="title" style="margin:0;">우리는 친구야?</h1>
+
+    <button id="langBtn" style="
+        border:none;
+        background:#eee;
+        border-radius:15px;
+        padding:5px 10px;
+        cursor:pointer;
+        font-size:12px;
+        font-weight:bold;
+    ">
+        RU
+    </button>
+</div>
+    
+    <div class="buttons">
+        <button id="yes">Да</button>
+        <button id="no">Нет</button>
+    </div>
+
+<div class="fade-overlay" id="fade"></div>
+<div class="loader-wrap" id="loader">
+    <div class="terminal" id="terminal"></div>
+</div>
+
+<div class="essay-scene" id="essayScene">
+    <div class="essay-text" id="essayText"></div>
+</div>
+
+<div class="white-scene" id="scene">
+    <div class="typing" id="typedText"></div>
+</div>
+
+<!-- JavaS -->
+<script>
+const no = document.getElementById("no");
+const yes = document.getElementById("yes");
+const title = document.getElementById("title");
+const langBtn = document.getElementById("langBtn");
+const loader = document.getElementById("loader");
+const yesRect = yes.getBoundingClientRect();
+const progress = document.getElementById("progress");
+const percent = document.getElementById("percent");
+const terminal = document.getElementById("terminal");
+const fade = document.getElementById("fade");
+const scene = document.getElementById("scene");
+const typedText = document.getElementById("typedText");
+const finalText = "Connection established.\nWelcome to the system.\nEverything is now ready.";
+const essayScene = document.getElementById("essayScene");
+const essayText = document.getElementById("essayText");
+const essay = `ЗДЕСЬ ТВОЙ ТЕКСТ СОЧИНЕНИЯ...
+Можно на несколько строк
+И он будет печататься плавно
+Как будто его набирают в реальном времени`;
+
+let isRussian = false;
+let essayBackgroundURL = "https://i.pinimg.com/736x/ba/e4/ac/bae4aca34d6bf442dc2c6ea8b9be6cec.jpg";
+
+function setEssayBackground(url){
+    essayScene.style.backgroundImage = `url(${url})`;
+}
+
+langBtn.addEventListener("click", () => {
+    isRussian = !isRussian;
+
+    if (isRussian) {
+        title.textContent = "Мы друзья?";
+        langBtn.textContent = "KR";
+    } else {
+        title.textContent = "우리는 친구야?";
+        langBtn.textContent = "RU";
+    }
+});
+
+no.addEventListener("click", () => {
+
+    no.classList.add("fall-away");
+
+    setTimeout(() => {
+        no.style.display = "none";
+    }, 700);
+});
+
+window.addEventListener("load", () => {
+
+    const yesRect = yes.getBoundingClientRect();
+    const cardRect = document
+        .querySelector(".buttons")
+        .getBoundingClientRect();
+
+    
+    no.style.left =
+        (yesRect.left - cardRect.left + yesRect.width/2) + "px";
+
+    no.style.top =
+        (yesRect.top - cardRect.top) + "px";
+
+    no.style.transform =
+        "translateX(-50%)";
+});
+
+window.onload = () => {
+
+    
+    no.style.left = "50%";
+    no.style.top = "10px";
+    no.style.transform = "translateX(-50%)";
+};
+
+let scale = 1;
+
+// Сука, я этот переход ненавижу
+no.style.left =
+    yesRect.right + "px";
+
+no.style.top =
+    yesRect.top + "px";
+
+function typeWriter(text, element, speed = 40, callback) {
+    let i = 0;
+    element.textContent = "";
+
+    const interval = setInterval(() => {
+        element.textContent += text[i];
+        i++;
+
+        if (i >= text.length) {
+            clearInterval(interval);
+            if (callback) callback();
+        }
+    }, speed);
+}
+
+yes.onclick = () => {
+    fade.style.opacity = "1";
+
+    setTimeout(() => {
+
+    loader.style.display = "none";
+
+    scene.style.display = "flex";
+
+    setTimeout(() => {
+        scene.classList.add("show");
+
+        typeWriter(finalText, typedText, 40, () => {
+
+            setTimeout(() => {
+
+                scene.style.opacity = "0";
+
+                setTimeout(() => {
+                    scene.style.display = "none";
+                    essayScene.style.display = "flex";
+                    setEssayBackground(essayBackgroundURL);
+                    setTimeout(() => {
+                        essayScene.style.opacity = "1";
+                        typeWriter(essay, essayText, 20);
+
+                    }, 300);
+
+                }, 800);
+
+            }, 1200);
+
+        });
+
+    }, 300);
+
+}, 800);
+};
+</script>
+
+</body>
+</html>
