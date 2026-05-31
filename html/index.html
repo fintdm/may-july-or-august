@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖 Date?</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    background:linear-gradient(135deg,#fff0f5,#ffe5ef);
+}
+
+/* Сердечки */
+.heart{
+    position:fixed;
+    top:-30px;
+    font-size:20px;
+    animation:fall linear forwards;
+    pointer-events:none;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh);
+        opacity:0;
+    }
+}
+
+/* Карточка */
+.card{
+    background:white;
+    padding:35px;
+    border-radius:35px;
+    text-align:center;
+    width:420px;
+    box-shadow:0 15px 45px rgba(255,120,170,.25);
+    position:relative;
+    z-index:2;
+    animation:show .6s ease;
+}
+
+@keyframes show{
+    from{
+        opacity:0;
+        transform:scale(.8);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+img{
+    width:150px;
+    height:150px;
+    object-fit:cover;
+    border-radius:25px;
+    margin-bottom:15px;
+}
+
+h1{
+    color:#6d2948;
+    margin-bottom:25px;
+    font-size:30px;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    position:relative;
+}
+
+button{
+    border:none;
+    border-radius:30px;
+    padding:14px 30px;
+    font-size:18px;
+    cursor:pointer;
+    transition:.25s;
+    font-weight:bold;
+}
+
+#yes{
+    background:#ff9fc4;
+    color:white;
+    box-shadow:0 6px 18px rgba(255,120,170,.35);
+}
+
+.shake{
+    animation:shake .35s;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    50%{transform:translateX(6px);}
+    75%{transform:translateX(-6px);}
+    100%{transform:translateX(0);}
+}
+
+#no{
+    background:#e2d7ff;
+    color:#6540a6;
+    position:fixed;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+    <img src="https://placehold.co/200x200/png" alt="">
+    <h1>🌸 Will you go on a date with me? 🌸</h1>
+
+    <div class="buttons">
+        <button id="yes">YES 💖</button>
+        <button id="no">NO 🥺</button>
+    </div>
+</div>
+
+<script>
+const no = document.getElementById("no");
+const yes = document.getElementById("yes");
+
+let scale = 1;
+
+// стартовая позиция NO
+no.style.left = "55%";
+no.style.top = "60%";
+
+// Убегание от курсора
+document.addEventListener("mousemove", (e)=>{
+
+    const rect = no.getBoundingClientRect();
+
+    const dx = e.clientX - (rect.left + rect.width/2);
+    const dy = e.clientY - (rect.top + rect.height/2);
+
+    const distance = Math.sqrt(dx*dx + dy*dy);
+
+    if(distance < 120){
+
+        let newX =
+            rect.left - dx * 0.8;
+
+        let newY =
+            rect.top - dy * 0.8;
+
+        newX = Math.max(
+            0,
+            Math.min(window.innerWidth - rect.width,newX)
+        );
+
+        newY = Math.max(
+            0,
+            Math.min(window.innerHeight - rect.height,newY)
+        );
+
+        no.style.left = newX + "px";
+        no.style.top = newY + "px";
+
+        // YES растет
+        yes.classList.add("shake");
+
+        setTimeout(()=>{
+            yes.classList.remove("shake");
+        },350);
+    }
+});
+
+// YES нажали
+yes.onclick = ()=>{
+
+    document.body.innerHTML = `
+    <div style="
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    flex-direction:column;
+    background:#fff0f6;
+    font-size:55px;
+    color:#ff4f95;
+    ">
+    💖 YAYYYYY 💖
+    <div style="font-size:25px;margin-top:15px;">
+    You said YES ✨
+    </div>
+    </div>`;
+};
+
+// Сердечки
+setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerHTML="💗";
+
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=
+        Math.random()*3+2+"s";
+
+    document.body.appendChild(h);
+
+    setTimeout(()=>h.remove(),5000);
+
+},250);
+</script>
+
+</body>
+</html>
